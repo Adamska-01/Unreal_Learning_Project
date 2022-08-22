@@ -30,6 +30,17 @@ public:
 	/** Inital switch location */
 	UPROPERTY(BLueprintReadWrite, Category = "Floor Switch")
 		FVector InitialSwitchLocation;
+
+	/** Handle to the timer struct */
+	FTimerHandle SwitchHandle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Floor Switch")
+		float SwitchTime;
+
+private:
+	bool bCharacterOnSwitch;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,4 +68,12 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Floor_Switch)
 		void LowerFloorSwitch();
+
+	UFUNCTION(BlueprintCallable, Category = Floor_Switch)
+		void UpdateDoorLocation(float Z);
+
+	UFUNCTION(BlueprintCallable, Category = Floor_Switch)
+		void UpdateFloorSwitchLocation(float Z);
+
+	void CloseDoor();
 };
