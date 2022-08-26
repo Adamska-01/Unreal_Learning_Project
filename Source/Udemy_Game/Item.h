@@ -16,6 +16,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BLueprintReadWrite, Category = "Item | Collision")
 		class USphereComponent* CollisionVolume;
 
+	/** Base Mesh component */
+	UPROPERTY(VisibleAnywhere, BLueprintReadWrite, Category = "Item | Mesh")
+		class UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Particles")
+		class UParticleSystemComponent* IdleParticlesComponent;
+
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Particles")
+		class UParticleSystem* OverlapParticles;
+
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Sound")
+		class USoundCue* OverlapSound;
+
 protected:
 	virtual void BeginPlay() override;
 
