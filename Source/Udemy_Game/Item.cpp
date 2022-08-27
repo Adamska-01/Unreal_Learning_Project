@@ -22,6 +22,9 @@ AItem::AItem()
 
 	CollisionVolume->OnComponentBeginOverlap.AddDynamic(this, &AItem::OnOverlapBegin);
 	CollisionVolume->OnComponentEndOverlap.AddDynamic(this, &AItem::OnOverlapEnd);
+
+	bRotate = false;
+	RotationRate = 45.0f;
 }
 
 void AItem::BeginPlay()
@@ -34,6 +37,12 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bRotate)
+	{
+		FRotator rotation = GetActorRotation();
+		rotation.Yaw += DeltaTime * RotationRate;
+		SetActorRotation(rotation);
+	}
 }
 
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

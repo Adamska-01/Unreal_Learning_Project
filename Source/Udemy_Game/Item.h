@@ -29,6 +29,11 @@ public:
 	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Sound")
 		class USoundCue* OverlapSound;
 
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Properties")
+		bool bRotate;
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Properties")
+		float RotationRate;
+
 protected:
 	virtual void BeginPlay() override;
 
