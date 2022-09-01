@@ -37,6 +37,13 @@ AMainChr::AMainChr()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); //Set a rate for the roation only on the yaw
 	GetCharacterMovement()->JumpZVelocity = 650.0f; //Vertical jump velocoty 
 	GetCharacterMovement()->AirControl = 0.25f; //How much control do you want in the air??
+
+	//Setting up stats
+	MaxHealth = 100.0f;
+	Health = 65.0f;
+	MaxStamina = 350.0f;
+	Stamina = 120.0f;
+	Coins = 0;
 }
 
 void AMainChr::BeginPlay()
