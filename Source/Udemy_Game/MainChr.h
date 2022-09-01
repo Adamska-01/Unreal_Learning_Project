@@ -1,10 +1,17 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "MainChr.generated.h"
+
+UENUM(BlueprintType)
+enum class EMovementStatus : uint8
+{
+	EMS_Normal UMETA(DisplayName = "Normal"),
+	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+
+	EMS_MAX UMETA(DisplayName = "DefaultMAX"),
+};
 
 UCLASS()
 class UDEMY_GAME_API AMainChr : public ACharacter
@@ -27,9 +34,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 		float BaseLookUpRate;
 
-	/***/
+	/**
 	/* Player Stats
-	*/
+	**/
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
+		EMovementStatus MovementStatus;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
 		float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
@@ -39,6 +49,11 @@ public:
 		float MaxStamina;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
 		float Stamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Running")
+		float RunningSpeed;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Runnnig")
+		float SprintingSpeed;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
 		int32 Coins;
@@ -70,11 +85,17 @@ private:
 	void LookUpAtRate(float Rate);
 
 public:
-	//GETTERS AND SETTERS 
+	/**
+	/* GETTERS AND SETTERS
+	**/ 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
 
 	void DecrementHealth(float Amount);
 	void IncrementCoin(int32 Amount);
+
+	//Set Movement status and running speed
+	void SetMovementStatus(EMovementStatus Status);
+
 	void Die();
 };

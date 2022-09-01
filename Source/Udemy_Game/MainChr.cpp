@@ -44,6 +44,9 @@ AMainChr::AMainChr()
 	MaxStamina = 350.0f;
 	Stamina = 120.0f;
 	Coins = 0;
+
+	RunningSpeed = 650.0f;
+	SprintingSpeed = 950.0f;
 }
 
 void AMainChr::BeginPlay()
@@ -139,6 +142,15 @@ void AMainChr::DecrementHealth(float Amount)
 void AMainChr::IncrementCoin(int32 Amount)
 { 
 	Coins += Amount; 
+}
+
+void AMainChr::SetMovementStatus(EMovementStatus Status)
+{
+	MovementStatus = Status;
+	if (MovementStatus == EMovementStatus::EMS_Sprinting) 
+		GetCharacterMovement()->MaxWalkSpeed = SprintingSpeed; 
+	else 
+		GetCharacterMovement()->MaxWalkSpeed = RunningSpeed; 
 }
 
 void AMainChr::Die()
