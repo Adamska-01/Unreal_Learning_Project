@@ -122,3 +122,26 @@ void AMainChr::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
+void AMainChr::DecrementHealth(float Amount)
+{
+	if (Health - Amount <= 0.0f)
+	{
+		Health -= Amount;
+		Die();
+	}
+	else
+	{
+		Amount = std::abs(Amount);
+		Health -= Amount;
+	}
+}
+
+void AMainChr::IncrementCoin(int32 Amount)
+{ 
+	Coins += Amount; 
+}
+
+void AMainChr::Die()
+{
+}
+

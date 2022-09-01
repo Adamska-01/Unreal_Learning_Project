@@ -73,4 +73,8 @@ public:
 	//GETTERS AND SETTERS 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
+
+	void DecrementHealth(float Amount);
+	void IncrementCoin(int32 Amount);
+	void Die();
 };

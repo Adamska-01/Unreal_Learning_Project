@@ -17,6 +17,10 @@ public:
 	APickUp();
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
+		int32 CoinAmount;
+
+public:
 	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 };
