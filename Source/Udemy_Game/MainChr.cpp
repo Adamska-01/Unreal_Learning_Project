@@ -45,8 +45,10 @@ AMainChr::AMainChr()
 	Stamina = 120.0f;
 	Coins = 0;
 
-	RunningSpeed = 650.0f;
+	RunningSpeed = 350.0f;
 	SprintingSpeed = 950.0f;
+
+	bShiftKeyDown = false;
 }
 
 void AMainChr::BeginPlay()
@@ -83,6 +85,10 @@ void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//Bind Actions (There is already a function for jumping in the ACharacter class
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
+
+	//Bind Sprinting action
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &AMainChr::ShiftKeyDown);
+	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &AMainChr::ShiftKeyUp);
 }
 
 void AMainChr::MoveForward(float value)
@@ -123,6 +129,16 @@ void AMainChr::LookUpAtRate(float Rate)
 {
 	//Look by BaseLookUpdate value every second 
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMainChr::ShiftKeyDown()
+{
+	bShiftKeyDown = true;
+}
+
+void AMainChr::ShiftKeyUp()
+{
+	bShiftKeyDown = false;
 }
 
 void AMainChr::DecrementHealth(float Amount)

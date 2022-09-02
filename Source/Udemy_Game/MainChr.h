@@ -34,6 +34,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 		float BaseLookUpRate;
 
+	bool bShiftKeyDown; 
+
 	/**
 	/* Player Stats
 	**/
@@ -83,6 +85,11 @@ private:
 	/** @param Rate --> Normalised rate, i.e 1.0f means 100% of desired look up/down rate
 	*/
 	void LookUpAtRate(float Rate);
+
+	/** Pressed down to enable sprinting */
+	void ShiftKeyDown();
+	/** Released to stop sprinting */
+	void ShiftKeyUp();
 
 public:
 	/**
