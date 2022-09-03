@@ -3,6 +3,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 AMainChr::AMainChr()
@@ -27,6 +28,10 @@ AMainChr::AMainChr()
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
 
+	//Set Stamina drain rates 
+	StaminaDrainRate = 25.0f;
+	MinSprintStamina = 50.0f;
+
 	//Rotate only the camera/Spring arm (instead of the whole character)
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationPitch = false;
@@ -40,13 +45,17 @@ AMainChr::AMainChr()
 
 	//Setting up stats
 	MaxHealth = 100.0f;
-	Health = 65.0f;
-	MaxStamina = 350.0f;
-	Stamina = 120.0f;
+	Health = MaxHealth;
+	MaxStamina = 150.0f;
+	Stamina = MaxStamina;
 	Coins = 0;
 
-	RunningSpeed = 350.0f;
-	SprintingSpeed = 950.0f;
+	//Init enums
+	MovementStatus = EMovementStatus::EMS_Normal;
+	StaminaStatus = EStaminaStatus::ESS_Normal;
+
+	RunningSpeed = 450.0f;
+	SprintingSpeed = 650.0f;
 
 	bShiftKeyDown = false;
 }
@@ -57,14 +66,93 @@ void AMainChr::BeginPlay()
 	
 }
 
-// Called every frame
 void AMainChr::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	Super::Tick(DeltaTime); 
 
+	float DeltaStamina = StaminaDrainRate * DeltaTime; 
+	
+	switch (StaminaStatus)
+	{
+	case EStaminaStatus::ESS_Normal:
+		if (bShiftKeyDown && !GetMovementComponent()->Velocity.IsZero())
+		{
+			if (Stamina - DeltaStamina <= MinSprintStamina)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_BelowMinimum);
+			} 
+			if(!GetMovementComponent()->IsFalling()) 
+				Stamina -= DeltaStamina;  
+			SetMovementStatus(EMovementStatus::EMS_Sprinting);
+		}
+		else //Shift key up
+		{
+			if (Stamina + DeltaStamina >= MaxStamina)
+			{
+				Stamina = MaxStamina;
+			}
+			else
+			{
+				if (!GetMovementComponent()->IsFalling())
+					Stamina += DeltaStamina;
+			}
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		break;
+	case EStaminaStatus::ESS_BelowMinimum:
+		if (bShiftKeyDown)
+		{ 
+			if (Stamina - DeltaStamina <= 0.0f)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_Exhausted);
+				Stamina = 0.0f;
+				SetMovementStatus(EMovementStatus::EMS_Normal);
+			}
+			else //Not Exhausted
+			{
+				if (!GetMovementComponent()->IsFalling())
+					Stamina -= DeltaStamina;
+				SetMovementStatus(EMovementStatus::EMS_Sprinting);
+			}
+		}
+		else //Shift key up
+		{
+			if (Stamina + DeltaStamina >= MinSprintStamina)
+			{
+				SetStaminaStatus(EStaminaStatus::ESS_Normal);
+			}
+			if (!GetMovementComponent()->IsFalling())
+				Stamina += DeltaStamina;
+			SetMovementStatus(EMovementStatus::EMS_Normal);
+		}
+		break;
+	case EStaminaStatus::ESS_Exhausted:
+		if (bShiftKeyDown)
+		{ 
+			Stamina = 0.0f;
+		}
+		else //Shift key up
+		{ 
+			SetStaminaStatus(EStaminaStatus::ESS_ExhaustedRecovering);
+			if (!GetMovementComponent()->IsFalling())
+				Stamina += DeltaStamina;
+		}
+		SetMovementStatus(EMovementStatus::EMS_Normal);
+		break;
+	case EStaminaStatus::ESS_ExhaustedRecovering: 
+		if (Stamina + DeltaStamina >= MinSprintStamina)
+		{
+			SetStaminaStatus(EStaminaStatus::ESS_Normal);
+		}
+		if (!GetMovementComponent()->IsFalling())
+			Stamina += DeltaStamina;
+		SetMovementStatus(EMovementStatus::EMS_Normal);  
+		break; 
+	default:
+		break;
+	} 
 }
 
-// Called to bind functionality to input
 void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -139,6 +227,14 @@ void AMainChr::ShiftKeyDown()
 void AMainChr::ShiftKeyUp()
 {
 	bShiftKeyDown = false;
+}
+
+void AMainChr::ShowPickUpLocations()
+{
+	for (int i = 0; i < PickUpLocations.Num(); i++)
+	{
+		UKismetSystemLibrary::DrawDebugSphere(this, PickUpLocations[i], 25.0f, 24, FLinearColor::Green, 10.0f, 0.5f); 
+	}
 }
 
 void AMainChr::DecrementHealth(float Amount)

@@ -12,6 +12,16 @@ enum class EMovementStatus : uint8
 
 	EMS_MAX UMETA(DisplayName = "DefaultMAX"),
 };
+UENUM(BlueprintType)
+enum class EStaminaStatus : uint8
+{
+	ESS_Normal UMETA(DisplayName = "Normal"),
+	ESS_BelowMinimum UMETA(DisplayName = "Below_Minimum"),
+	ESS_Exhausted UMETA(DisplayName = "Exhausted"),
+	ESS_ExhaustedRecovering UMETA(DisplayName = "ExhaustedRecovering"),
+
+	ESS_MAX UMETA(DisplayName = "DefaultMAX"),
+};
 
 UCLASS()
 class UDEMY_GAME_API AMainChr : public ACharacter
@@ -20,6 +30,8 @@ class UDEMY_GAME_API AMainChr : public ACharacter
 
 public: 
 	AMainChr();
+
+	TArray<FVector> PickUpLocations;
 
 	/** Needed to position the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta=(AllowPrivateAccess = "true")) //meta makes it accessible in the current blueprint but not on other's blueprint
@@ -34,14 +46,21 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 		float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float StaminaDrainRate;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+		float MinSprintStamina;
+
 	bool bShiftKeyDown; 
 
 	/**
 	/* Player Stats
 	**/
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Player Stats")
-		EMovementStatus MovementStatus;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+		EMovementStatus MovementStatus;	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Enums")
+		EStaminaStatus StaminaStatus;
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
 		float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Stats")
@@ -91,12 +110,17 @@ private:
 	/** Released to stop sprinting */
 	void ShiftKeyUp();
 
+	//Debug
+	UFUNCTION(BlueprintCallable)
+		void ShowPickUpLocations();
+
 public:
 	/**
 	/* GETTERS AND SETTERS
 	**/ 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
+	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
 
 	void DecrementHealth(float Amount);
 	void IncrementCoin(int32 Amount);
