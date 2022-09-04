@@ -33,6 +33,9 @@ public:
 
 	TArray<FVector> PickUpLocations;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Items")
+		class AWeapon* EquippedWeapon;
+
 	/** Needed to position the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta=(AllowPrivateAccess = "true")) //meta makes it accessible in the current blueprint but not on other's blueprint
 		class USpringArmComponent* CameraBoom; 
@@ -121,6 +124,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
+	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
 
 	void DecrementHealth(float Amount);
 	void IncrementCoin(int32 Amount);

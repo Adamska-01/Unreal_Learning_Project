@@ -18,6 +18,8 @@ void AExplosive::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* Oth
 		if (main)
 		{
 			main->DecrementHealth(Damage);
+		
+			Destroy();
 		}
 	}
 }

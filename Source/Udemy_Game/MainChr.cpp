@@ -100,7 +100,7 @@ void AMainChr::Tick(float DeltaTime)
 		}
 		break;
 	case EStaminaStatus::ESS_BelowMinimum:
-		if (bShiftKeyDown)
+		if (bShiftKeyDown && !GetMovementComponent()->Velocity.IsZero())
 		{ 
 			if (Stamina - DeltaStamina <= 0.0f)
 			{
