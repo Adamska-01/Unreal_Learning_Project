@@ -13,6 +13,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BLueprintReadWrite, Category = "SkeletalMesh") 
 		class USkeletalMeshComponent* SkeletalMesh;
 
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Sound")
+		class USoundCue* OnEquipSound;
+
+	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Particles")
+		bool bWeaponParticle;
+
 public:
 	AWeapon();
 

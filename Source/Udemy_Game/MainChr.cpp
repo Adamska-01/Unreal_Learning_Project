@@ -4,6 +4,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Weapon.h"
 
 
 AMainChr::AMainChr()
@@ -58,6 +59,7 @@ AMainChr::AMainChr()
 	SprintingSpeed = 650.0f;
 
 	bShiftKeyDown = false;
+	bLMBDown = false;
 }
 
 void AMainChr::BeginPlay()
@@ -177,6 +179,10 @@ void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	//Bind Sprinting action
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Pressed, this, &AMainChr::ShiftKeyDown);
 	PlayerInputComponent->BindAction("Sprint", EInputEvent::IE_Released, this, &AMainChr::ShiftKeyUp);
+
+	//Bind LMB action
+	PlayerInputComponent->BindAction("LMB", EInputEvent::IE_Pressed, this, &AMainChr::LMBDown);
+	PlayerInputComponent->BindAction("LMB", EInputEvent::IE_Released, this, &AMainChr::LMBUp);
 }
 
 void AMainChr::MoveForward(float value)
@@ -227,6 +233,27 @@ void AMainChr::ShiftKeyDown()
 void AMainChr::ShiftKeyUp()
 {
 	bShiftKeyDown = false;
+}
+
+void AMainChr::LMBDown()
+{
+	bLMBDown = true;
+
+	//Equip item by pressing LMB if a weapon pick up is overlapped
+	if (ActiveOverlappingItem)
+	{
+		AWeapon* weapon = Cast<AWeapon>(ActiveOverlappingItem);
+		if (weapon != nullptr)
+		{
+			weapon->Equip(this);
+			SetActiveOverlappingItem(nullptr);
+		}
+	}
+}
+
+void AMainChr::LMBUp()
+{
+	bLMBDown = false;
 }
 
 void AMainChr::ShowPickUpLocations()

@@ -32,10 +32,7 @@ public:
 	AMainChr();
 
 	TArray<FVector> PickUpLocations;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Items")
-		class AWeapon* EquippedWeapon;
-
+	 
 	/** Needed to position the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta=(AllowPrivateAccess = "true")) //meta makes it accessible in the current blueprint but not on other's blueprint
 		class USpringArmComponent* CameraBoom; 
@@ -54,7 +51,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float MinSprintStamina;
 
+	//Input bools
 	bool bShiftKeyDown; 
+	bool bLMBDown;
 
 	/**
 	/* Player Stats
@@ -81,6 +80,12 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Stats")
 		int32 Coins;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Items")
+		class AItem* ActiveOverlappingItem;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Items")
+		class AWeapon* EquippedWeapon;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -113,6 +118,9 @@ private:
 	/** Released to stop sprinting */
 	void ShiftKeyUp();
 
+	void LMBDown();
+	void LMBUp();
+
 	//Debug
 	UFUNCTION(BlueprintCallable)
 		void ShowPickUpLocations();
@@ -125,6 +133,7 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
+	FORCEINLINE void SetActiveOverlappingItem(AItem* ItemToSet) { ActiveOverlappingItem = ItemToSet; }
 
 	void DecrementHealth(float Amount);
 	void IncrementCoin(int32 Amount);
