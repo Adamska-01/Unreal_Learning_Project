@@ -13,13 +13,15 @@ AWeapon::AWeapon()
 	SkeletalMesh->SetupAttachment(GetRootComponent());
 
 	bWeaponParticle = false;
+
+	WeaponState = EWeaponState::EWS_Pickup;
 }
 
 void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnOverlapBegin(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 
-	if (OtherActor != nullptr)
+	if (WeaponState == EWeaponState::EWS_Pickup && OtherActor != nullptr)
 	{
 		AMainChr* main = Cast<AMainChr>(OtherActor);
 		if (main != nullptr)
@@ -70,12 +72,20 @@ void AWeapon::Equip(AMainChr* Chr)
 			//Turn off rotation functionality (while still an pickuppable item)
 			bRotate = false;
 
+			//Destroy currently equipped weapon
+			if(Chr->GetEquippedWeapon() != nullptr)
+				Chr->GetEquippedWeapon()->Destroy();
+
+			//Equip
 			Chr->SetEquippedWeapon(this);
+			Chr->SetActiveOverlappingItem(nullptr);
 		}
 
+		//Play sound
 		if (OnEquipSound != nullptr) 
 			UGameplayStatics::PlaySound2D(this, OnEquipSound);
 		
+		//Stop particles
 		if (!bWeaponParticle)
 			IdleParticlesComponent->Deactivate();
 	}

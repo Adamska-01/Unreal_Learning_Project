@@ -131,6 +131,7 @@ public:
 	**/ 
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
+	FORCEINLINE class AWeapon* GetEquippedWeapon() { return EquippedWeapon; }
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
 	FORCEINLINE void SetActiveOverlappingItem(AItem* ItemToSet) { ActiveOverlappingItem = ItemToSet; }
