@@ -51,9 +51,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float MinSprintStamina;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
+		class UAnimMontage* CombatMontage;
+
 	//Input bools
 	bool bShiftKeyDown; 
 	bool bLMBDown;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")
+		bool bAttacking;
 
 	/**
 	/* Player Stats
@@ -120,6 +125,8 @@ private:
 
 	void LMBDown();
 	void LMBUp();
+
+	void Attack();
 
 	//Debug
 	UFUNCTION(BlueprintCallable)

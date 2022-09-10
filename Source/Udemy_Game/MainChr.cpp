@@ -2,6 +2,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Weapon.h"
@@ -60,6 +61,7 @@ AMainChr::AMainChr()
 
 	bShiftKeyDown = false;
 	bLMBDown = false;
+	bAttacking = false;
 }
 
 void AMainChr::BeginPlay()
@@ -240,7 +242,7 @@ void AMainChr::LMBDown()
 	bLMBDown = true;
 
 	//Equip item by pressing LMB if a weapon pick up is overlapped
-	if (ActiveOverlappingItem)
+	if (ActiveOverlappingItem != nullptr)
 	{
 		AWeapon* weapon = Cast<AWeapon>(ActiveOverlappingItem);
 		if (weapon != nullptr)
@@ -249,11 +251,27 @@ void AMainChr::LMBDown()
 			SetActiveOverlappingItem(nullptr);
 		}
 	}
+	else if (EquippedWeapon != nullptr) //Attack state
+	{
+		Attack();
+	}
 }
 
 void AMainChr::LMBUp()
 {
 	bLMBDown = false;
+}
+
+void AMainChr::Attack()
+{
+	bAttacking = true;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance != nullptr && CombatMontage != nullptr)
+	{
+		AnimInstance->Montage_Play(CombatMontage, 1.35f);
+		AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+	}
 }
 
 void AMainChr::ShowPickUpLocations()

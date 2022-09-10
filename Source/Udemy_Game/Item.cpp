@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Engine/World.h"
+#include "MainChr.h"
+
 
 AItem::AItem()
 {
@@ -49,13 +51,20 @@ void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 { 
 	UE_LOG(LogTemp, Warning, TEXT("Super::OnOverlapBegin()"));
 
-	if (OverlapParticles != nullptr)
+	//Continue only if it's the player
+	AMainChr* main = Cast<AMainChr>(OtherActor);
+	if (main != nullptr)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorTransform());
-	}
-	if (OverlapSound != nullptr)
-	{
-		UGameplayStatics::PlaySound2D(this, OverlapSound);
+		//Spawn particles 
+		if (OverlapParticles != nullptr)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorTransform());
+		}
+		//Play Sound 
+		if (OverlapSound != nullptr)
+		{
+			UGameplayStatics::PlaySound2D(this, OverlapSound);
+		}
 	}
 }
 
