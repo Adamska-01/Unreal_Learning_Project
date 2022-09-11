@@ -125,8 +125,10 @@ private:
 
 	void LMBDown();
 	void LMBUp();
-
+	  
 	void Attack();
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
 
 	//Debug
 	UFUNCTION(BlueprintCallable)

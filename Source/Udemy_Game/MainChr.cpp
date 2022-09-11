@@ -189,7 +189,7 @@ void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMainChr::MoveForward(float value)
 {
-	if (Controller != nullptr && value != 0.0f)
+	if (Controller != nullptr && value != 0.0f && !bAttacking)
 	{
 		//Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -203,7 +203,7 @@ void AMainChr::MoveForward(float value)
 
 void AMainChr::MoveRight(float value)
 {
-	if (Controller != nullptr && value != 0.0f)
+	if (Controller != nullptr && value != 0.0f && !bAttacking)
 	{
 		//Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -264,13 +264,25 @@ void AMainChr::LMBUp()
 
 void AMainChr::Attack()
 {
-	bAttacking = true;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance != nullptr && CombatMontage != nullptr)
+	if (!bAttacking)
 	{
-		AnimInstance->Montage_Play(CombatMontage, 1.35f);
-		AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+		bAttacking = true;
+
+		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+		if (AnimInstance != nullptr && CombatMontage != nullptr)
+		{
+			AnimInstance->Montage_Play(CombatMontage, 1.35f);
+			AnimInstance->Montage_JumpToSection(FName("Attack_1"), CombatMontage);
+		}
+	}
+}
+
+void AMainChr::AttackEnd()
+{
+	bAttacking = false;
+	if (bLMBDown)
+	{
+		Attack();
 	}
 }
 
