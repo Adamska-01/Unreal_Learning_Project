@@ -17,7 +17,13 @@ void UEnemyAnimInstance::NativeInitializeAnimation()
 void UEnemyAnimInstance::UpdateAnimationProperties()
 {
 	if (Pawn == nullptr)
+	{
 		Pawn = TryGetPawnOwner();
+		if (Pawn != nullptr)
+		{
+			Enemy = Cast<AEnemy>(Pawn);
+		}
+	}
 	else
 	{
 		//Movement
