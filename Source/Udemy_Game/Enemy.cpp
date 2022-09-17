@@ -1,6 +1,8 @@
 #include "Enemy.h"
 #include "Components/SphereComponent.h"
 #include "AIController.h"
+#include "AI/Navigation/NavigationTypes.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "MainChr.h"
 
 
@@ -76,12 +78,16 @@ void AEnemy::MoveToTarget(AMainChr* Target)
 		//Create 2 data types needed for the MoveTo function
 		FAIMoveRequest MoveRequest;
 		MoveRequest.SetGoalActor(Target);
-		MoveRequest.SetAcceptanceRadius(5.0f);
+		MoveRequest.SetAcceptanceRadius(25.0f);
 
-		FNavPathSharedPtr* NavPath = nullptr;
+		FNavPathSharedPtr NavPath;
 
 		//Movement
-		AIController->MoveTo(MoveRequest, NavPath);
+		AIController->MoveTo(MoveRequest, &NavPath);
+
+		/*TArray<FNavPathPoint> PathPoints = NavPath->GetPathPoints(); 
+		for (auto point : PathPoints) 
+			UKismetSystemLibrary::DrawDebugSphere(this, point.Location, 25.0f, 24, FLinearColor::Red, 10.0f, 1.5f);*/
 	}
 }
 
