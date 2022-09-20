@@ -16,7 +16,9 @@ AEnemy::AEnemy()
 
 	CombatSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CombatSphere"));
 	CombatSphere->SetupAttachment(GetRootComponent());
-	CombatSphere->InitSphereRadius(75.0f);
+	CombatSphere->InitSphereRadius(90.0f);
+
+	bOverlappingCombatSphere = false;
 }
 
 void AEnemy::BeginPlay()
@@ -58,15 +60,56 @@ void AEnemy::AgroSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 }
 
 void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
+{ 
+	if (OtherActor != nullptr)
+	{
+		AMainChr* Main = Cast<AMainChr>(OtherActor);
+		if (Main)
+		{
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
+			if (AIController != nullptr)
+			{
+				AIController->StopMovement();
+			}
+		}
+	}
 }
 
 void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (OtherActor != nullptr)
+	{
+		AMainChr* Main = Cast<AMainChr>(OtherActor);
+		if (Main)
+		{
+			bOverlappingCombatSphere = true;
+
+			//Set target reference
+			CombatTarget = Main;
+
+			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+		}
+	}
 }
 
 void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OtherActor != nullptr)
+	{
+		AMainChr* Main = Cast<AMainChr>(OtherActor);
+		if (Main)
+		{
+			bOverlappingCombatSphere = false; 
+
+			if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)
+			{
+				//Unset target reference
+				CombatTarget = nullptr;
+
+				MoveToTarget(Main);
+			}
+		}
+	}
 }
 
 void AEnemy::MoveToTarget(AMainChr* Target)
@@ -84,7 +127,7 @@ void AEnemy::MoveToTarget(AMainChr* Target)
 
 		//Movement
 		AIController->MoveTo(MoveRequest, &NavPath);
-
+		
 		/*TArray<FNavPathPoint> PathPoints = NavPath->GetPathPoints(); 
 		for (auto point : PathPoints) 
 			UKismetSystemLibrary::DrawDebugSphere(this, point.Location, 25.0f, 24, FLinearColor::Red, 10.0f, 1.5f);*/

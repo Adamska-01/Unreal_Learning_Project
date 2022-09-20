@@ -37,6 +37,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 		class AAIController* AIController;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
+		class AMainChr* CombatTarget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
+		bool bOverlappingCombatSphere;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,7 +64,8 @@ public:
 	UFUNCTION()
 		virtual void CombatSphereOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-	void MoveToTarget(class AMainChr* Target);
+	UFUNCTION(BlueprintCallable)
+		void MoveToTarget(class AMainChr* Target);
 
 public:
 	//GETTERS and SETTERS
