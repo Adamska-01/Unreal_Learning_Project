@@ -54,7 +54,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 		class UAnimMontage* CombatMontage;
 
-	//Input bools
+	//Input bools 
 	bool bShiftKeyDown; 
 	bool bLMBDown;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Anims")

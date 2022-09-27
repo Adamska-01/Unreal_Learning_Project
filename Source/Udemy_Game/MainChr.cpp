@@ -74,8 +74,10 @@ void AMainChr::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 
+	if (GetVelocity().IsZero())
+		bShiftKeyDown = false;
+
 	float DeltaStamina = StaminaDrainRate * DeltaTime; 
-	
 	switch (StaminaStatus)
 	{
 	case EStaminaStatus::ESS_Normal:
@@ -228,13 +230,14 @@ void AMainChr::LookUpAtRate(float Rate)
 }
 
 void AMainChr::ShiftKeyDown()
-{
+{ 
 	bShiftKeyDown = true;
 }
 
 void AMainChr::ShiftKeyUp()
 {
-	bShiftKeyDown = false;
+	if(GetVelocity().IsZero()) 
+		bShiftKeyDown = false;
 }
 
 void AMainChr::LMBDown()
