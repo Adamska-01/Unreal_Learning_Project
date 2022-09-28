@@ -18,27 +18,44 @@ class UDEMY_GAME_API AWeapon : public AItem
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(VisibleAnywhere, BLueprintReadWrite, Category = "SkeletalMesh") 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Combat")
+		float Damage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "SkeletalMesh")
 		class USkeletalMeshComponent* SkeletalMesh;
 
-	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
 		class USoundCue* OnEquipSound;
 
-	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item | Particles")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Particles")
 		bool bWeaponParticle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item | Conmbat")
+		class UBoxComponent* CombatCollision;
 
 	//State
 	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item")
 		EWeaponState WeaponState;
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	AWeapon();
 
 public:
-	//Callbacks
+	//------------------Callbacks------------------
+	//Pick up collisions
 	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void OnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
+	//Combat collisions
+	UFUNCTION()
+		virtual void CombatBoxOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void CombatBoxOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	//Getters & Setters
 	void Equip(class AMainChr* Chr);
 
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }

@@ -19,6 +19,11 @@ AEnemy::AEnemy()
 	CombatSphere->InitSphereRadius(90.0f);
 
 	bOverlappingCombatSphere = false;
+
+	//Stats
+	Health = 75.0f;
+	MaxHealth = 100.0f;
+	Damage = 10.0f;
 }
 
 void AEnemy::BeginPlay()

@@ -5,16 +5,32 @@
 #include "MainChr.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "Components/BoxComponent.h" 
+#include "Enemy.h"
+ 
 
 AWeapon::AWeapon()
 {
 	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
 	SkeletalMesh->SetupAttachment(GetRootComponent());
 
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision->SetupAttachment(GetRootComponent());
+
 	bWeaponParticle = false;
 
+	Damage = 25.0f;
+
 	WeaponState = EWeaponState::EWS_Pickup;
+}
+
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//Bind combat collisions to the event
+	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::CombatBoxOnOverlapBegin);
+	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AWeapon::CombatBoxOnOverlapEnd);
 }
 
 void AWeapon::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -43,6 +59,26 @@ void AWeapon::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 			main->SetActiveOverlappingItem(nullptr);
 		}
 	}
+}
+
+void AWeapon::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != nullptr)
+	{
+		AEnemy* enemy = Cast<AEnemy>(OtherActor);
+		if (WeaponState == EWeaponState::EWS_Equipped && enemy != nullptr)
+		{
+			if (enemy->HitParticles != nullptr)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticles, GetActorLocation(), FRotator::ZeroRotator, true);
+			} 
+		}
+	}
+}
+
+void AWeapon::CombatBoxOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
 }
 
 void AWeapon::Equip(AMainChr* Chr)
@@ -88,5 +124,7 @@ void AWeapon::Equip(AMainChr* Chr)
 		//Stop particles
 		if (!bWeaponParticle)
 			IdleParticlesComponent->Deactivate();
+
+		SetWeaponState(EWeaponState::EWS_Equipped);
 	}
 }

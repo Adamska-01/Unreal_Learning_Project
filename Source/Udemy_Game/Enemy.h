@@ -43,6 +43,17 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "AI")
 		bool bOverlappingCombatSphere;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		class UParticleSystem* HitParticles;
+
+	//Stats
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		float Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		float MaxHealth;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		float Damage;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
