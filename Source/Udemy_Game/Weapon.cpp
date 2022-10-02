@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h" 
 #include "Enemy.h"
+#include "Engine/SkeletalMeshSocket.h"
  
 
 AWeapon::AWeapon()
@@ -16,6 +17,11 @@ AWeapon::AWeapon()
 
 	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
 	CombatCollision->SetupAttachment(GetRootComponent());
+
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision); //Activate collisions while attacking 
+	CombatCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic); 
+	CombatCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); //First ignore everything and then set collision to pawn
+	CombatCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); //Enemy is a pawn, Overlap with it
 
 	bWeaponParticle = false;
 
@@ -70,8 +76,12 @@ void AWeapon::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 		{
 			if (enemy->HitParticles != nullptr)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticles, GetActorLocation(), FRotator::ZeroRotator, true);
-			} 
+				const USkeletalMeshSocket* weaponSocket = SkeletalMesh->GetSocketByName("WeaponSocket");
+				if(weaponSocket != nullptr)
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticles, weaponSocket->GetSocketLocation(SkeletalMesh), FRotator::ZeroRotator, true);
+				else
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticles, GetActorLocation(), FRotator::ZeroRotator, true);
+			}
 		}
 	}
 }
@@ -79,6 +89,16 @@ void AWeapon::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 void AWeapon::CombatBoxOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 
+}
+
+void AWeapon::ActivateCollision()
+{
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly); //Not use physics, Only generate overlap events
+}
+
+void AWeapon::DeactivateCollision()
+{
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AWeapon::Equip(AMainChr* Chr)

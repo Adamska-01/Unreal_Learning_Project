@@ -55,6 +55,11 @@ public:
 	UFUNCTION()
 		virtual void CombatBoxOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(BlueprintCallable)
+		void ActivateCollision();
+	UFUNCTION(BlueprintCallable)
+		void DeactivateCollision();
+
 	//Getters & Setters
 	void Equip(class AMainChr* Chr);
 
