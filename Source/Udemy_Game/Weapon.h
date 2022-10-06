@@ -26,13 +26,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
 		class USoundCue* OnEquipSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Sound")
+		USoundCue* SwingSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Particles")
 		bool bWeaponParticle;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item | Conmbat")
 		class UBoxComponent* CombatCollision;
-
+	 
 	//State
 	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item")
 		EWeaponState WeaponState;

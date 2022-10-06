@@ -82,6 +82,8 @@ void AWeapon::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 				else
 					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), enemy->HitParticles, GetActorLocation(), FRotator::ZeroRotator, true);
 			}
+			if(enemy->HitSound != nullptr) //Play hit sound
+				UGameplayStatics::PlaySound2D(this, enemy->HitSound);
 		}
 	}
 }

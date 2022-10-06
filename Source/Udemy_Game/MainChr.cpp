@@ -6,6 +6,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Weapon.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AMainChr::AMainChr()
@@ -288,7 +290,7 @@ void AMainChr::Attack()
 			default:
 				break;
 			}
-		}
+		} 
 	}
 }
 
@@ -299,7 +301,7 @@ void AMainChr::AttackEnd()
 	{
 		Attack();
 	}
-}
+} 
 
 void AMainChr::ShowPickUpLocations()
 {

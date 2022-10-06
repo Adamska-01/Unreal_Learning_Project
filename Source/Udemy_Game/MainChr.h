@@ -128,7 +128,7 @@ private:
 	  
 	void Attack();
 	UFUNCTION(BlueprintCallable)
-		void AttackEnd();
+		void AttackEnd(); 
 
 	//Debug
 	UFUNCTION(BlueprintCallable)
