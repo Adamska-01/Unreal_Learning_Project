@@ -48,6 +48,17 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class USoundCue* HitSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		 USoundCue* SwingSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+		class UAnimMontage* CombatMontage;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+		class UBoxComponent* CombatCollision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		bool bAttacking;
 
 	//Stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
@@ -78,8 +89,24 @@ public:
 	UFUNCTION()
 		virtual void CombatSphereOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	//Combat collisions
+	UFUNCTION()
+		virtual void CombatBoxOnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		virtual void CombatBoxOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	UFUNCTION(BlueprintCallable)
 		void MoveToTarget(class AMainChr* Target);
+
+	UFUNCTION(BlueprintCallable)
+		void ActivateCollision();
+	UFUNCTION(BlueprintCallable)
+		void DeactivateCollision();
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
 
 public:
 	//GETTERS and SETTERS

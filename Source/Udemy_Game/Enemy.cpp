@@ -4,6 +4,12 @@
 #include "AI/Navigation/NavigationTypes.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MainChr.h"
+#include "Components/BoxComponent.h"
+#include "MainChr.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Animation/AnimInstance.h"
 
 
 AEnemy::AEnemy()
@@ -18,7 +24,12 @@ AEnemy::AEnemy()
 	CombatSphere->SetupAttachment(GetRootComponent());
 	CombatSphere->InitSphereRadius(90.0f);
 
+	//Attack box collision to claw socket 
+	CombatCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("CombatCollision"));
+	CombatCollision->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("Enemy_Socket"));
+
 	bOverlappingCombatSphere = false;
+	bAttacking = false;
 
 	//Stats
 	Health = 75.0f;
@@ -38,6 +49,14 @@ void AEnemy::BeginPlay()
 
 	CombatSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapBegin);
 	CombatSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatSphereOnOverlapEnd);
+	  
+	CombatCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatBoxOnOverlapBegin);
+	CombatCollision->OnComponentEndOverlap.AddDynamic(this, &AEnemy::CombatBoxOnOverlapEnd);
+
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision); //Activate collisions while attacking 
+	CombatCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	CombatCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore); //First ignore everything and then set collision to pawn
+	CombatCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap); //Player is a pawn, Overlap with it
 }
 
 void AEnemy::Tick(float DeltaTime)
@@ -92,7 +111,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 			//Set target reference
 			CombatTarget = Main;
 
-			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+			Attack();
 		}
 	}
 }
@@ -115,6 +134,71 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 			}
 		}
 	}
+}
+
+void AEnemy::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor != nullptr)
+	{
+		AMainChr* main = Cast<AMainChr>(OtherActor);
+		if (main != nullptr)
+		{
+			if (main->HitParticles != nullptr)
+			{
+				const USkeletalMeshSocket* tipSocket = GetMesh()->GetSocketByName("Tip_Socket");
+				if (tipSocket != nullptr)
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), main->HitParticles, tipSocket->GetSocketLocation(GetMesh()), FRotator::ZeroRotator, true);
+				else
+					UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), main->HitParticles, main->GetTargetLocation(), FRotator::ZeroRotator, true);
+			}
+			if (main->HitSound != nullptr) //Play hit sound
+				UGameplayStatics::PlaySound2D(this, main->HitSound);
+		}
+	}
+}
+
+void AEnemy::CombatBoxOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+}
+
+void AEnemy::ActivateCollision()
+{
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::QueryOnly); //Not use physics, Only generate overlap events
+}
+
+void AEnemy::DeactivateCollision()
+{
+	CombatCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AEnemy::Attack()
+{
+	if (AIController != nullptr)
+	{
+		//Stop
+		AIController->StopMovement(); 
+		//Set Attack State
+		SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Attacking);
+	}
+	if (!bAttacking)
+	{
+		bAttacking = true;
+		UAnimInstance* animInstance = GetMesh()->GetAnimInstance();
+		if (animInstance != nullptr)
+		{
+			animInstance->Montage_Play(CombatMontage, 1.35f);
+			animInstance->Montage_JumpToSection(FName("Attack"), CombatMontage);
+		} 
+	}
+}
+
+void AEnemy::AttackEnd()
+{
+	bAttacking = false;
+
+	//Attack again if still overlapping with the player 
+	if (bOverlappingCombatSphere)
+		Attack();
 }
 
 void AEnemy::MoveToTarget(AMainChr* Target)
