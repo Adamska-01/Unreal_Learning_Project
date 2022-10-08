@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Animation/AnimInstance.h"
+#include "TimerManager.h"
 
 
 AEnemy::AEnemy()
@@ -35,6 +36,9 @@ AEnemy::AEnemy()
 	Health = 75.0f;
 	MaxHealth = 100.0f;
 	Damage = 10.0f;
+
+	AttackMinTime = 0.5f;
+	AttackMaxTime = 3.5f;
 }
 
 void AEnemy::BeginPlay()
@@ -134,6 +138,9 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 
 				MoveToTarget(Main);
 			}
+
+			//Clear timer, delegate Attack() won't run 
+			GetWorldTimerManager().ClearTimer(AttackTimer);
 		}
 	}
 }
@@ -200,7 +207,11 @@ void AEnemy::AttackEnd()
 
 	//Attack again if still overlapping with the player 
 	if (bOverlappingCombatSphere)
-		Attack();
+	{
+		float attackTime = FMath::FRandRange(AttackMinTime, AttackMaxTime);
+		//Attack 
+		GetWorldTimerManager().SetTimer(AttackTimer, this, &AEnemy::Attack, attackTime);
+	}
 }
 
 void AEnemy::MoveToTarget(AMainChr* Target)

@@ -60,6 +60,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		bool bAttacking;
 
+	FTimerHandle AttackTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float AttackMinTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float AttackMaxTime;
+
 	//Stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float Health;
