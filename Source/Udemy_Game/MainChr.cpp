@@ -8,6 +8,8 @@
 #include "Weapon.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Enemy.h"
 
 
 AMainChr::AMainChr()
@@ -31,6 +33,10 @@ AMainChr::AMainChr()
 	//Set turn rates for input
 	BaseTurnRate = 65.0f;
 	BaseLookUpRate = 65.0f;
+
+	//Interpolation when attacking 
+	InterpSpeed = 15.0f;
+	bInterpToEnemy = false;
 
 	//Set Stamina drain rates 
 	StaminaDrainRate = 25.0f;
@@ -159,6 +165,14 @@ void AMainChr::Tick(float DeltaTime)
 	default:
 		break;
 	} 
+
+	if (bInterpToEnemy && CombatTarget != nullptr)
+	{
+		FRotator lookAtYaw = GetLookAtRotationYaw(CombatTarget->GetActorLocation());
+		FRotator interpRotation = FMath::RInterpTo(GetActorRotation(), lookAtYaw, DeltaTime, InterpSpeed);
+
+		SetActorRotation(interpRotation);
+	}
 }
 
 void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -272,7 +286,8 @@ void AMainChr::Attack()
 	if (!bAttacking)
 	{
 		bAttacking = true;
-
+		SetInterpToEnemy(true);
+		 
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance != nullptr && CombatMontage != nullptr)
 		{
@@ -297,18 +312,27 @@ void AMainChr::Attack()
 void AMainChr::AttackEnd()
 {
 	bAttacking = false;
+	SetInterpToEnemy(false);
+
 	if (bLMBDown)
 	{
 		Attack();
 	}
-} 
-
+}
+ 
 void AMainChr::ShowPickUpLocations()
 {
 	for (int i = 0; i < PickUpLocations.Num(); i++)
 	{
 		UKismetSystemLibrary::DrawDebugSphere(this, PickUpLocations[i], 25.0f, 24, FLinearColor::Green, 10.0f, 0.5f); 
 	}
+}
+
+FRotator AMainChr::GetLookAtRotationYaw(FVector Target)
+{
+	FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetTargetLocation(), Target);
+	
+	return FRotator(0.0f, rot.Yaw, 0.0f);
 }
 
 void AMainChr::DecrementHealth(float Amount)

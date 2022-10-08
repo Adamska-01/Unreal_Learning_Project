@@ -106,6 +106,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 		AMainChr* Main = Cast<AMainChr>(OtherActor);
 		if (Main)
 		{
+			Main->SetCombatTarget(this);
 			bOverlappingCombatSphere = true;
 
 			//Set target reference
@@ -123,6 +124,7 @@ void AEnemy::CombatSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActo
 		AMainChr* Main = Cast<AMainChr>(OtherActor);
 		if (Main)
 		{
+			Main->SetCombatTarget(nullptr);
 			bOverlappingCombatSphere = false; 
 
 			if (EnemyMovementStatus != EEnemyMovementStatus::EMS_Attacking)

@@ -52,6 +52,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 		float BaseLookUpRate;
 
+	//Interpolation to the enemy location when attacking
+	float InterpSpeed;
+	bool bInterpToEnemy;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		class AEnemy* CombatTarget;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float StaminaDrainRate;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
@@ -136,6 +142,7 @@ private:
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd(); 
 
+
 	//Debug
 	UFUNCTION(BlueprintCallable)
 		void ShowPickUpLocations();
@@ -147,9 +154,14 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() { return CameraBoom; }
 	FORCEINLINE class UCameraComponent* GetFollowCamera() { return FollowCamera; } 
 	FORCEINLINE class AWeapon* GetEquippedWeapon() { return EquippedWeapon; }
+	FRotator GetLookAtRotationYaw(FVector Target);
+
+
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
 	FORCEINLINE void SetActiveOverlappingItem(AItem* ItemToSet) { ActiveOverlappingItem = ItemToSet; }
+	FORCEINLINE void SetCombatTarget(AEnemy* Target) { CombatTarget = Target; }
+	FORCEINLINE void SetInterpToEnemy(bool Interp) { bInterpToEnemy = Interp; }
 
 	void DecrementHealth(float Amount);
 	void IncrementCoin(int32 Amount);
