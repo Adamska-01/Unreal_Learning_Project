@@ -12,6 +12,7 @@ enum class EEnemyMovementStatus : uint8
 	EMS_Idle			UMETA(DeplayName = "Idle"),
 	EMS_MoveToTarget	UMETA(DeplayName = "MoveToTarget"),
 	EMS_Attacking		UMETA(DeplayName = "Attacking"),
+	EMS_Dead			UMETA(DeplayName = "Dead"),
 
 	EMS_MAX				UMETA(DeplayName = "DefaultMAX")
 };
@@ -53,12 +54,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 		class UAnimMontage* CombatMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+		class UAnimMontage* DeathMontage;
+
+	FTimerHandle DeathTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		float DeathDelay;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
 		class UBoxComponent* CombatCollision;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		bool bAttacking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+		TSubclassOf<UDamageType> DamageTypeClass;
 
 	FTimerHandle AttackTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
@@ -101,6 +111,16 @@ public:
 	UFUNCTION()
 		virtual void CombatBoxOnOverlapEnd(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
+	void Die();
+	UFUNCTION(BlueprintCallable)
+		void DeathEnd();
+
+	bool IsAlive();
+
+	void Disappear();
+
 	UFUNCTION(BlueprintCallable)
 		void MoveToTarget(class AMainChr* Target);
 
@@ -113,7 +133,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd();
-
+	 
 public:
 	//GETTERS and SETTERS
 	FORCEINLINE void SetEnemyMovementStatus(EEnemyMovementStatus Status) { EnemyMovementStatus = Status; }

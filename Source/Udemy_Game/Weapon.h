@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Item.h"
+#include "Item.h" 
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -35,8 +35,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item | Conmbat")
 		class UBoxComponent* CombatCollision;
 	 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Combat")
+		TSubclassOf<UDamageType> DamageTypeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item | Combat")
+		class AController* WeaponInstigator;
+
 	//State
-	UPROPERTY(EditAnywhere, BLueprintReadWrite, Category = "Item")
+	UPROPERTY(VisibleAnywhere, BLueprintReadWrite, Category = "Item")
 		EWeaponState WeaponState;
 
 protected:
@@ -66,5 +72,6 @@ public:
 	void Equip(class AMainChr* Chr);
 
 	FORCEINLINE void SetWeaponState(EWeaponState State) { WeaponState = State; }
+	FORCEINLINE void SetInstigator(AController* Inst) { WeaponInstigator = Inst; }
 	FORCEINLINE EWeaponState GetWeaponState() { return WeaponState; }
 };

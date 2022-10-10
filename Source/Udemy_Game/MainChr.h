@@ -65,6 +65,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Anims")
 		class UAnimMontage* CombatMontage;
+	
 
 	//Input bools 
 	bool bShiftKeyDown; 
@@ -156,7 +157,6 @@ public:
 	FORCEINLINE class AWeapon* GetEquippedWeapon() { return EquippedWeapon; }
 	FRotator GetLookAtRotationYaw(FVector Target);
 
-
 	FORCEINLINE void SetStaminaStatus(EStaminaStatus Status) { StaminaStatus = Status; } 
 	FORCEINLINE void SetEquippedWeapon(AWeapon* WeaponToSet) { EquippedWeapon = WeaponToSet; }
 	FORCEINLINE void SetActiveOverlappingItem(AItem* ItemToSet) { ActiveOverlappingItem = ItemToSet; }
@@ -164,6 +164,7 @@ public:
 	FORCEINLINE void SetInterpToEnemy(bool Interp) { bInterpToEnemy = Interp; }
 
 	void DecrementHealth(float Amount);
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 	void IncrementCoin(int32 Amount);
 
 	//Set Movement status and running speed

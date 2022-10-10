@@ -349,6 +349,13 @@ void AMainChr::DecrementHealth(float Amount)
 	}
 }
 
+float AMainChr::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DecrementHealth(DamageAmount);
+
+	return DamageAmount;
+}
+
 void AMainChr::IncrementCoin(int32 Amount)
 { 
 	Coins += Amount; 
@@ -365,5 +372,11 @@ void AMainChr::SetMovementStatus(EMovementStatus Status)
 
 void AMainChr::Die()
 {
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance != nullptr && CombatMontage != nullptr)
+	{
+		AnimInstance->Montage_Play(CombatMontage);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage); 
+	}
 }
 

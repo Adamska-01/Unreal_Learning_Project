@@ -84,13 +84,15 @@ void AWeapon::CombatBoxOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 			}
 			if(enemy->HitSound != nullptr) //Play hit sound
 				UGameplayStatics::PlaySound2D(this, enemy->HitSound);
+			if (DamageTypeClass != nullptr) //Apply damage
+				UGameplayStatics::ApplyDamage(enemy, Damage, WeaponInstigator, this, DamageTypeClass);
 		}
 	}
 }
 
 void AWeapon::CombatBoxOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	
 }
 
 void AWeapon::ActivateCollision()
@@ -115,6 +117,9 @@ void AWeapon::Equip(AMainChr* Chr)
 
 		//Stop simulating physics
 		SkeletalMesh->SetSimulatePhysics(false);
+
+		//Set instigator (for damage)
+		SetInstigator(Chr->GetController());
 
 		//Attach the sword to the character's hand
 		const USkeletalMeshSocket* rightHandSocket = Chr->GetMesh()->GetSocketByName("RightHandSocket");
