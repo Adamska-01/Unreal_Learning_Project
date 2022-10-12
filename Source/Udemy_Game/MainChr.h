@@ -32,6 +32,9 @@ public:
 	AMainChr();
 
 	TArray<FVector> PickUpLocations;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Controller")
+		class AMainPlayerController* MainPlayerController;
 	 
 	/** Needed to position the camera behind the player */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta=(AllowPrivateAccess = "true")) //meta makes it accessible in the current blueprint but not on other's blueprint
@@ -56,7 +59,12 @@ public:
 	float InterpSpeed;
 	bool bInterpToEnemy;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		bool bHasCombatTarget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		class AEnemy* CombatTarget;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Combat")
+		FVector CombatTargetLocation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 		float StaminaDrainRate;
@@ -162,6 +170,7 @@ public:
 	FORCEINLINE void SetActiveOverlappingItem(AItem* ItemToSet) { ActiveOverlappingItem = ItemToSet; }
 	FORCEINLINE void SetCombatTarget(AEnemy* Target) { CombatTarget = Target; }
 	FORCEINLINE void SetInterpToEnemy(bool Interp) { bInterpToEnemy = Interp; }
+	FORCEINLINE void SetHasCombatTarget(bool HasTarget) { bHasCombatTarget = HasTarget; }
 
 	void DecrementHealth(float Amount);
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;

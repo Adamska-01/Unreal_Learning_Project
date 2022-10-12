@@ -10,6 +10,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Enemy.h"
+#include "MainPlayerController.h"
 
 
 AMainChr::AMainChr()
@@ -70,12 +71,14 @@ AMainChr::AMainChr()
 	bShiftKeyDown = false;
 	bLMBDown = false;
 	bAttacking = false;
+	bHasCombatTarget = false;
 }
 
 void AMainChr::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MainPlayerController = Cast<AMainPlayerController>(GetController());
 }
 
 void AMainChr::Tick(float DeltaTime)
@@ -172,6 +175,15 @@ void AMainChr::Tick(float DeltaTime)
 		FRotator interpRotation = FMath::RInterpTo(GetActorRotation(), lookAtYaw, DeltaTime, InterpSpeed);
 
 		SetActorRotation(interpRotation);
+	}
+
+	if (CombatTarget != nullptr)
+	{
+		CombatTargetLocation = CombatTarget->GetActorLocation();
+		if (MainPlayerController != nullptr) //Set location to the controller 
+		{
+			MainPlayerController->EnemyLocation = CombatTargetLocation;
+		}
 	}
 }
 
