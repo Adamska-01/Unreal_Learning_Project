@@ -54,8 +54,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 		class UAnimMontage* CombatMontage;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-		class UAnimMontage* DeathMontage;
 
 	FTimerHandle DeathTimer;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")

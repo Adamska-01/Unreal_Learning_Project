@@ -5,32 +5,28 @@ void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Player health bar 
+	//Player health bar 	
 	if (HUDOverlayAsset)
 	{
 		HUDOverlay = CreateWidget<UUserWidget>(this, HUDOverlayAsset);
-		if (HUDOverlay != nullptr)
+		if (HUDOverlay)
 		{
 			HUDOverlay->AddToViewport();
 			HUDOverlay->SetVisibility(ESlateVisibility::Visible);
 		}
 	}
-	
+
 	//Enemy health bar
 	if (WEnemyHealthBar)
 	{
 		EnemyHealthBar = CreateWidget<UUserWidget>(this, WEnemyHealthBar);
-		if (EnemyHealthBar != nullptr)
+		if (EnemyHealthBar)
 		{
-			//Show HUD in the viewport
 			EnemyHealthBar->AddToViewport();
-			HUDOverlay->SetVisibility(ESlateVisibility::Hidden);
-			bEnemyHealthBarVisible = false;
+			EnemyHealthBar->SetVisibility(ESlateVisibility::Hidden);
 		}
-
-		//Alignment (flat facing the screen (0, 0))
-		FVector2D vec(0.0f, 0.0f);
-		EnemyHealthBar->SetAlignmentInViewport(vec);
+		FVector2D Alignment(0.f, 0.f);
+		EnemyHealthBar->SetAlignmentInViewport(Alignment);
 	}
 }
 

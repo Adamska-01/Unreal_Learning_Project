@@ -9,6 +9,7 @@ enum class EMovementStatus : uint8
 {
 	EMS_Normal UMETA(DisplayName = "Normal"),
 	EMS_Sprinting UMETA(DisplayName = "Sprinting"),
+	EMS_Dead UMETA(DisplayName = "Dead"),
 
 	EMS_MAX UMETA(DisplayName = "DefaultMAX"),
 };
@@ -146,11 +147,15 @@ private:
 
 	void LMBDown();
 	void LMBUp();
+
+	virtual void Jump() override;
 	  
 	void Attack();
 	UFUNCTION(BlueprintCallable)
 		void AttackEnd(); 
 
+	UFUNCTION(BlueprintCallable)
+		void DeathEnd();
 
 	//Debug
 	UFUNCTION(BlueprintCallable)

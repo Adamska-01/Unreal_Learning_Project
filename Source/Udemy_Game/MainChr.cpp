@@ -85,6 +85,9 @@ void AMainChr::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime); 
 
+	if (MovementStatus == EMovementStatus::EMS_Dead)
+		return;
+
 	if (GetVelocity().IsZero())
 		bShiftKeyDown = false;
 
@@ -205,7 +208,7 @@ void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMainChr::LookUpAtRate);
 
 	//Bind Actions (There is already a function for jumping in the ACharacter class
-	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AMainChr::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
 	//Bind Sprinting action
@@ -219,7 +222,7 @@ void AMainChr::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AMainChr::MoveForward(float value)
 {
-	if (Controller != nullptr && value != 0.0f && !bAttacking)
+	if (Controller != nullptr && value != 0.0f && !bAttacking && MovementStatus != EMovementStatus::EMS_Dead)
 	{
 		//Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -233,7 +236,7 @@ void AMainChr::MoveForward(float value)
 
 void AMainChr::MoveRight(float value)
 {
-	if (Controller != nullptr && value != 0.0f && !bAttacking)
+	if (Controller != nullptr && value != 0.0f && !bAttacking && MovementStatus != EMovementStatus::EMS_Dead)
 	{
 		//Find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -272,6 +275,9 @@ void AMainChr::LMBDown()
 {
 	bLMBDown = true;
 
+	if (MovementStatus == EMovementStatus::EMS_Dead)
+		return;
+
 	//Equip item by pressing LMB if a weapon pick up is overlapped
 	if (ActiveOverlappingItem != nullptr)
 	{
@@ -293,9 +299,15 @@ void AMainChr::LMBUp()
 	bLMBDown = false;
 }
 
+void AMainChr::Jump()
+{  
+	if (MovementStatus != EMovementStatus::EMS_Dead)
+		ACharacter::Jump();
+}
+
 void AMainChr::Attack()
 {
-	if (!bAttacking)
+	if (!bAttacking && MovementStatus != EMovementStatus::EMS_Dead)
 	{
 		bAttacking = true;
 		SetInterpToEnemy(true);
@@ -330,6 +342,13 @@ void AMainChr::AttackEnd()
 	{
 		Attack();
 	}
+}
+
+void AMainChr::DeathEnd()
+{
+	//Stop animation after death 
+	GetMesh()->bPauseAnims = true;
+	//GetMesh()->bNoSkeletonUpdate = true;
 }
  
 void AMainChr::ShowPickUpLocations()
@@ -384,11 +403,15 @@ void AMainChr::SetMovementStatus(EMovementStatus Status)
 
 void AMainChr::Die()
 {
+	if (MovementStatus == EMovementStatus::EMS_Dead)
+		return;
+
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance != nullptr && CombatMontage != nullptr)
 	{
 		AnimInstance->Montage_Play(CombatMontage);
 		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage); 
 	}
+	SetMovementStatus(EMovementStatus::EMS_Dead);
 }
 

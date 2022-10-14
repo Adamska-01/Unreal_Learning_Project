@@ -108,7 +108,7 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor*
 			//Hide health bar
 			if (Main->MainPlayerController != nullptr)
 			{
-				Main->MainPlayerController->DisplayEnemyHealthBar();
+				Main->MainPlayerController->HideEnemyHealthBar();
 			}
 
 			SetEnemyMovementStatus(EEnemyMovementStatus::EMS_Idle);
@@ -211,10 +211,10 @@ float AEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AC
 void AEnemy::Die()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance != nullptr && DeathMontage != nullptr)
+	if (AnimInstance != nullptr && CombatMontage != nullptr)
 	{
-		AnimInstance->Montage_Play(DeathMontage);
-		AnimInstance->Montage_JumpToSection(FName("Death"), DeathMontage);
+		AnimInstance->Montage_Play(CombatMontage);
+		AnimInstance->Montage_JumpToSection(FName("Death"), CombatMontage);
 	}
 
 	//Set collisions off
