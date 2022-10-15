@@ -74,6 +74,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 		float AttackMaxTime;
 
+	bool bHasValidTarget;
+
 	//Stats
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float Health;

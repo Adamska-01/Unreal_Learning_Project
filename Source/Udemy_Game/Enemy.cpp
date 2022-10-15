@@ -33,6 +33,7 @@ AEnemy::AEnemy()
 
 	bOverlappingCombatSphere = false;
 	bAttacking = false;
+	bHasValidTarget = false;
 
 	//Stats
 	Health = 75.0f;
@@ -45,7 +46,6 @@ AEnemy::AEnemy()
 	DeathDelay = 3.0f;
 
 	EnemyMovementStatus = EEnemyMovementStatus::EMS_Idle;
-	
 }
 
 void AEnemy::BeginPlay()
@@ -100,6 +100,8 @@ void AEnemy::AgroSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor*
 		AMainChr* Main = Cast<AMainChr>(OtherActor);
 		if (Main)
 		{ 
+			bHasValidTarget = false;
+
 			if (Main->CombatTarget == this)
 			{
 				Main->SetCombatTarget(nullptr);
@@ -127,6 +129,7 @@ void AEnemy::CombatSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComp, AAc
 		AMainChr* Main = Cast<AMainChr>(OtherActor);
 		if (Main)
 		{
+			bHasValidTarget = true;
 			Main->SetCombatTarget(this); 
 			Main->SetHasCombatTarget(true);
 
@@ -258,7 +261,7 @@ void AEnemy::DeactivateCollision()
 
 void AEnemy::Attack()
 {
-	if (IsAlive())
+	if (IsAlive() && bHasValidTarget)
 	{
 		if (AIController != nullptr)
 		{

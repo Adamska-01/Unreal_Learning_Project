@@ -382,8 +382,21 @@ void AMainChr::DecrementHealth(float Amount)
 
 float AMainChr::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	DecrementHealth(DamageAmount);
-
+	if (Health - DamageAmount <= 0.0f)
+	{
+		Health -= DamageAmount;
+		Die();
+		if (DamageCauser != nullptr)
+		{
+			AEnemy* Enemy = Cast<AEnemy>(DamageCauser);
+			if (Enemy != nullptr)
+				Enemy->bHasValidTarget = false;
+		}
+	}
+	else
+	{ 
+		Health -= DamageAmount;
+	}
 	return DamageAmount;
 }
 
