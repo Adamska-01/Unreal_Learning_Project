@@ -1,11 +1,7 @@
 #include "Item.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
-#include "Engine/World.h"
 #include "MainChr.h"
 
 
@@ -48,28 +44,10 @@ void AItem::Tick(float DeltaTime)
 }
 
 void AItem::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{ 
-	UE_LOG(LogTemp, Warning, TEXT("Super::OnOverlapBegin()"));
-
-	//Continue only if it's the player
-	AMainChr* main = Cast<AMainChr>(OtherActor);
-	if (main != nullptr)
-	{
-		//Spawn particles 
-		if (OverlapParticles != nullptr)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorTransform());
-		}
-		//Play Sound 
-		if (OverlapSound != nullptr)
-		{
-			UGameplayStatics::PlaySound2D(this, OverlapSound);
-		}
-	}
+{  
 }
 
 void AItem::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{ 
-	UE_LOG(LogTemp, Warning, TEXT("Super::OnOverlapEnd()"));
+{  
 }
 

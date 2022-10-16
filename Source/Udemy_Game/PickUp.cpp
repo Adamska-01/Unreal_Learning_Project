@@ -1,5 +1,8 @@
 #include "PickUp.h"
 #include "MainChr.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+
 
 APickUp::APickUp()
 {
@@ -17,6 +20,17 @@ void APickUp::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherA
 		AMainChr* main = Cast<AMainChr>(OtherActor);
 		if (main)
 		{
+			//Spawn particles 
+			if (OverlapParticles != nullptr)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), OverlapParticles, GetActorTransform());
+			}
+			//Play Sound 
+			if (OverlapSound != nullptr)
+			{
+				UGameplayStatics::PlaySound2D(this, OverlapSound);
+			}
+
 			main->IncrementCoin(CoinAmount);
 			main->PickUpLocations.Add(GetActorLocation());
 		
